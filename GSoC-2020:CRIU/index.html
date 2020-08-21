@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>GSoC 2020: CRIU</title>
+
+		<link href="https://fonts.googleapis.com/css2?family=Recursive:wght@200;300;400&display=swap" rel="stylesheet">
+
+		<style>
+			html * {font-family: 'Recursive', sans-serif; font-weight: bolder;}
+			h1 {margin-left: 25%;}
+			h2 {margin-left: 25%;}
+			h3 {margin-left: 25%;}
+			h4 {margin-left: 25%;}
+			body {background-color: #ffffec;}
+			p {margin-left: 25%; width: 50%; font-weight: normal;}
+			div {
+				margin-left: 25%;
+				width: 48%;
+				padding: 10px;
+				border: 5px solid grey;
+			}
+			table, th, td {
+				border: 1px solid grey;
+				border-collapse: collapse;
+			}
+			td {font-size: 15px; font-weight: normal;}
+			a:link {color: #6489d1;}
+			a:visited {color: #6489d1;}
+			a:hover {color: #3864ba;}
+			a:active {color: #3864ba;}
+		</style>
+	</head>
+
+	<body>
+		<h2>Google Summer of Code 2020</h2>
+		<h1>Optimize logging engine</h1>
+		<p style="font-size:16px; margin-left:25%; font-weight: bold;">May 2020 to August 2020</p>
+
+		<p></p>
+
+		<div>
+			<p style="margin-left:2%"><b>Name: </b>Prakriti Goyal</p>
+			<p style="margin-left:2%"><b>Organization: </b><a href="https://www.criu.org/Main_Page">CRIU</a></p>
+			<p style="margin-left:2%"><b>Mentor: 
+				<ul> 
+					<li> <a href="xemul@virtuozzo.com">Pavel Emelyanov</a> </li>
+				</ul>
+			</p>
+			<p style="margin-left:2%; width: 58%"><b>Official Documentation: </b>
+				<ul> 
+					<li> <a href="https://summerofcode.withgoogle.com/projects/#5262021429297152">GSoC Project Page</a> </li>
+				</ul>
+			</p>
+		</div>
+
+		<h2>The Issue</h2>
+		<p>
+			
+		</p>
+		<p>
+			During the execution, CRIU writes many logs. Most of these logs are not used, but if some operations fail, they are the only way to figure out the reason for this failure.
+		</p>
+		<p>
+			Currently, CRIU's logging is done using fprintf statements. The printf family of functions is known to take some time to work. They scan the format string for the format specifiers are then typecast all the arguments to string. It is observed that running criu with and without logging causes a significant time difference.
+		</p>
+
+		<h2>The Solution</h2>
+		<p>
+			
+		</p>
+		<p>
+			Since printf family functions spend the majority of the time during logging in parsing the format string for format specifiers, and also these log files are left unused majority of the time, we dump this string and all the arguments associated with this string into the file as it is.
+		</p>
+		<p>
+			If later this file needs to be read, we process it through the decoder. The decoder passes these statements through the printf family functions later, reducing criu's runtime.
+		</p>
+
+		<h2>The Usage</h2>
+		<p>
+			<h3>To make criu log in binary:</h3>
+			<p>
+				Adding a -b or --binary-file at the end of a criu command allows it to use the binary printer and log in binary.
+			</p>
+			<h3>For a simple loop</h3>
+			<p>These are the chanegs that should be made to dump a trivial program given <a href="https://criu.org/Simple_loop">here</a>.</p>
+			<h4>Dumping the process:</h4>
+			<p>
+				&emsp;&emsp; <i><b>criu dump -t 2221 -vvv -o dump.log -b && echo OK</b></i>
+				<br>
+			</p>
+			<h4>Restoring the process:</h4>
+			<p>
+				&emsp;&emsp; <i><b>criu restore -d -vvv -o restore.log -b && echo OK</b></i>
+				<br>
+			</p>
+			<h3>To use the decoder:</h3>
+			<p>
+				The decoder is placed in the crit folder. It requires two file names as input, one which needs to be proccessed and on where the decoded information is stored.
+			</p>
+			<p>
+				&emsp;&emsp; <i><b>crit/decoder </b> input_file_name output_file_name <b> && echo OK</b></i>
+				<br>
+			</p>
+		</p>
+		
+
+		<h2>List of Commits</h2>
+		<table style="width:48%; margin-left:27%">
+			<tr align="center">
+				<th>Commit Number</th>
+				<th>Commit Name</th>
+				<th>Status</th>
+			</tr>
+
+ 			<tr align="center">
+				<td>Commit 1/7</td>
+				<td><a href="">Add flog to criu</a></td>
+				<td>Merged</td>
+			</tr>
+
+			<tr align="center">
+				<td>Commit 2/7</td>
+				<td><a href="">Move files from criu/flog to criu/criu</a></td>
+				<td>Pushed</td>
+			</tr>
+
+			<tr align="center">
+				<td>Commit 3/7</td>
+				<td><a href="">Add option for logging in binary</a></td>
+				<td>Pushed</td>
+			</tr>
+
+			<tr align="center">
+				<td>Commit 4/7</td>
+				<td><a href="">Make changes to flog</a></td>
+				<td>Pushed</td>
+			</tr>
+
+			<tr align="center">
+				<td>Commit 5/7</td>
+				<td><a href="">Wire flog into criu</a></td>
+				<td>Pushed</td>
+			</tr>
+
+			<tr align="center">
+				<td>Commit 6/7</td>
+				<td><a href="">Add decoder to crit</a></td>
+				<td>Pushed</td>
+			</tr>
+
+			<tr align="center">
+				<td>Commit 7/7</td>
+				<td><a href="">Use decoder in zdtm.py</a></td>
+				<td>Work in Progress</td>
+			</tr>
+		</table>
+
+		<h2>Performance Impact</h2>
+		<p>
+			
+		</p>
+		<p>
+			
+		</p>
+
+		<h2>Pending Work</h2>
+		<p>
+			<ul style=" margin-left:27%;"> 
+				<li style= "font-weight: normal;">Add time stamp and PID to logs. </li>
+				<li style= "font-weight: normal;">Fix _Generic macro usage so it is compatible with centos architecture.</li>
+				<li style= "font-weight: normal;">Fix the decoder to be compatible with amd architecture. </li>
+			</ul>
+		</p>
+
+		<h2>Acknowledgements</h2>
+		<p>
+			I am incredibly thankful to my mentor Pavel Emelyanov for guiding me through this project and clarifying all my queries. I would also like to thank the community for everything. I got introduced into open-source with this community, and I could not have chosen a more accommodating community for this learning journey. I am eager to continue working with CRIU.
+		</p>
+	</body>
+</html>
