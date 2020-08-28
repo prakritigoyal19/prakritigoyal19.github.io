@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>GSoC 2020: CRIU</title>
+
+		<link href="https://fonts.googleapis.com/css2?family=Recursive:wght@200;300;400&display=swap" rel="stylesheet">
+
+		<style>
+			html * {font-family: 'Recursive', sans-serif; font-weight: bolder;}
+			h1 {margin-left: 25%;}
+			h2 {margin-left: 25%;}
+			h3 {margin-left: 25%;}
+			h4 {margin-left: 25%;}
+			body {background-color: #ffffec;}
+			p {margin-left: 25%; width: 50%; font-weight: normal;}
+			div {
+				margin-left: 25%;
+				width: 48%;
+				padding: 10px;
+				border: 5px solid grey;
+			}
+			table, th, td {
+				border: 1px solid grey;
+				border-collapse: collapse;
+			}
+			td {font-size: 15px; font-weight: normal;}
+			a:link {color: #6489d1;}
+			a:visited {color: #6489d1;}
+			a:hover {color: #3864ba;}
+			a:active {color: #3864ba;}
+		</style>
+	</head>
+
+	<body>
+		<h2>Google Summer of Code 2020</h2>
+		<h1>Optimize Logging Engine</h1>
+		<p style="font-size:16px; margin-left:25%; font-weight: bold;">May 2020 to August 2020</p>
+
+		<p></p>
+
+		<div>
+			<p style="margin-left:2%"><b>Name: </b>Prakriti Goyal</p>
+			<p style="margin-left:2%"><b>Organization: </b><a href="https://www.criu.org/Main_Page">CRIU</a></p>
+			<p style="margin-left:2%"><b>Mentor: 
+				<ul> 
+					<li> <a href="xemul@virtuozzo.com">Pavel Emelyanov</a> </li>
+				</ul>
+			</p>
+			<p style="margin-left:2%; width: 58%"><b>Official Documentation: </b>
+				<ul> 
+					<li> <a href="https://summerofcode.withgoogle.com/projects/#5262021429297152">GSoC Project Page</a> </li>
+				</ul>
+			</p>
+		</div>
+
+		<h2>The Issue</h2>
+		<p>
+			
+		</p>
+		<p>
+			During the execution, CRIU writes many logs. Most of these logs are not used, but if some operations fail, they are the only way to figure out the reason for this failure.
+		</p>
+		<p>
+			Currently, CRIU's logging is done using fprintf statements. The printf family of functions takes significant amount of time to execute. They scan the format string for the format specifiers are then typecast all the arguments to string. It is observed that running criu with and without logging causes a considerable time difference.
+		</p>
+
+		<h2>The Solution</h2>
+		<p>
+			
+		</p>
+		<p>
+			Since printf family functions spend the majority of the time during logging in parsing the format string for format specifiers, and also these log files are left unused majority of the time, we dump this string and all the arguments associated with this string into the file as it is.
+		</p>
+		<p>
+			If later this file needs to be read, we process it through the decoder. The decoder passes these statements through the printf family functions later, reducing criu's runtime.
+		</p>
+		<p>
+			As the outcome of this project, CRIU now has two separate printers, which it uses to log. When the binary logging is not enabled, CRIU uses the regular printer to log in standard text, but when binary logging is enabled, CRIU uses the flog printer to store the logs in binary.
+		</p>
+
+		<p>
+			The flog printer takes input as the format string and all the arguments following it. It finds the type of each argument and stores it. All these are stored in a buffer. When the buffer is full, the logs are dumped into a file.
+		</p>
+
+		<p>
+			The decoder traverses through the file. It selects the format string and its arguments from the binary file and passes it through a printf family function. The logs can then be observed in the output file provided.
+		</p>
+
+		<h2>The Usage</h2>
+		<p>
+			<h3>To make criu log in binary:</h3>
+			<p>
+				Adding a -b or --binary-file at the end of a criu command allows it to use the binary printer and log in binary.
+			</p>
+			<h3>For a simple loop</h3>
+			<p>These are the changes that should be made to dump a trivial program given <a href="https://criu.org/Simple_loop">here</a>.</p>
+			<h4>Dumping the process:</h4>
+			<p>
+				&emsp;&emsp; <i><b>criu dump -t 2221 -vvv -o dump.log -b && echo OK</b></i>
+				<br>
+			</p>
+			<h4>Restoring the process:</h4>
+			<p>
+				&emsp;&emsp; <i><b>criu restore -d -vvv -o restore.log -b && echo OK</b></i>
+				<br>
+			</p>
+			<h3>To use the decoder:</h3>
+			<p>
+				The decoder is placed in the crit folder. It requires two file names as input, one which needs to be proccessed and on where the decoded information is stored.
+			</p>
+			<p>
+				&emsp;&emsp; <i><b>crit/decoder dump.log decoded_dump.log && echo OK</b></i>
+				<br>
+			</p>
+		</p>
+		
+
+		<h2>List of Commits</h2>
+		<table style="width:48%; margin-left:27%">
+			<tr align="center">
+				<th>Commit Number</th>
+				<th>Commit Name</th>
+				<th>Status</th>
+			</tr>
+
+ 			<tr align="center">
+				<td>Commit 1/8</td>
+				<td><a href="https://github.com/checkpoint-restore/criu/commit/906907373349d469b761417cb6986d189d7ac215">Add flog to criu</a></td>
+				<td>Merged</td>
+			</tr>
+
+			<tr align="center">
+				<td>Commit 2/8</td>
+				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/95c1a0316277181902d37c28cf48fbc5dc5c49a2">Move files from criu/flog to criu/criu</a></td>
+				<td>Pushed</td>
+			</tr>
+
+			<tr align="center">
+				<td>Commit 3/8</td>
+				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/4aea88b549370826346ebc4deccb5b127aa07477">Add option for logging in binary</a></td>
+				<td>Pushed</td>
+			</tr>
+
+			<tr align="center">
+				<td>Commit 4/8</td>
+				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/51b30ec107798d5c67267c2eb2d4416ee74c5b05">Make changes to flog</a></td>
+				<td>Pushed</td>
+			</tr>
+
+			<tr align="center">
+				<td>Commit 5/8</td>
+				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/75c7e1af3cb831a5aa8c7e729ab6f1d79378a484">Wire flog into criu</a></td>
+				<td>Pushed</td>
+			</tr>
+
+			<tr align="center">
+				<td>Commit 6/8</td>
+				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/2e58c0f40942587a38471e33bb39badc50ec81a0">Add decoder to crit</a></td>
+				<td>Pushed</td>
+			</tr>
+
+			<tr align="center">
+				<td>Commit 7/8</td>
+				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/0753301037098bb868b80a210a87c5c236d5baf8">Use decoder in zdtm.py</a></td>
+				<td>Pushed</td>
+			</tr>
+			<tr align="center">
+				<td>Commit 8/8</td>
+				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/b3a64e4c72969d8cfb62e4b6df73ec759ca39f48">Document the usage of binary logger</a></td>
+				<td>Pushed</td>
+			</tr>
+		</table>
+
+		<h2>Performance Impact</h2>
+		<p>
+			
+		</p>
+		<p>
+			If used with the decoder, the overall time taken by the flog printer would be equivalent to the time taken by the regular printer. Since most of the logs are expected not to be used, the decoder will not be used on these logs. This is where the maximum performance improvement is observed.
+		</p>
+
+		<h2>Proposed Objectives and Status</h2>
+		<p>
+
+		</p>
+		<p>
+			<input type="checkbox" checked> Integrate flog into criu and add it into the criu makefile.<br>
+			<input type="checkbox" checked> Use the flog’s flog_encoder() to generate binary logs into a file.<br>
+			<input type="checkbox" checked> Provide external option to log in binary.<br>
+			<input type="checkbox" checked> Build the decoder to convert the binary log files to text files.<br>
+			<input type="checkbox" checked> Use decoder in criu wherever the log files are being read.<br>
+			<input type="checkbox" checked> Document the work done.<br>
+		</p>
+
+		<h2>Pending Work and Improvments</h2>
+		<p>
+			-	&emsp;Fix: _Generic macro usage so it is compatible with centos architecture.<br>
+			-	&emsp;Fix: The decoder to be compatible with amd architectures.<br>
+			-	&emsp;Add time stamp and PID to logs.<br>
+		</p>
+
+		<h2>Acknowledgements</h2>
+		<p>
+			I am incredibly thankful to my mentor Pavel Emelyanov for guiding me through this project and clarifying all my queries. I would also like to thank the community for everything. I got introduced into open-source with this community, and I could not have chosen a more accommodating community for this learning journey. I am eager to continue working with CRIU.
+		</p>
+	</body>
+</html>
