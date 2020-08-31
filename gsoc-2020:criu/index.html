@@ -2,7 +2,7 @@
 
 <html>
 	<head>
-		<title>GSoC 2020: CRIU</title>
+		<title>GSoC 2020-CRIU</title>
 
 		<link href="https://fonts.googleapis.com/css2?family=Recursive:wght@200;300;400&display=swap" rel="stylesheet">
 
@@ -49,6 +49,8 @@
 			</p>
 			<p style="margin-left:2%; width: 58%"><b>Official Documentation: </b>
 				<ul> 
+					<li> <a href="https://criu.org/Better_logging">Better logging wiki page</a> </li>
+					<br>
 					<li> <a href="https://summerofcode.withgoogle.com/projects/#5262021429297152">GSoC Project Page</a> </li>
 				</ul>
 			</p>
@@ -91,7 +93,7 @@
 		<p>
 			<h3>To make criu log in binary:</h3>
 			<p>
-				Adding a -b or --binary-file at the end of a criu command allows it to use the binary printer and log in binary.
+				Adding a -b or --binary-log at the end of a criu command allows it to use the binary printer and log in binary.
 			</p>
 			<h3>For a simple loop</h3>
 			<p>These are the changes that should be made to dump a trivial program given <a href="https://criu.org/Simple_loop">here</a>.</p>
@@ -125,49 +127,59 @@
 			</tr>
 
  			<tr align="center">
-				<td>Commit 1/8</td>
+				<td>Commit 1/10</td>
 				<td><a href="https://github.com/checkpoint-restore/criu/commit/906907373349d469b761417cb6986d189d7ac215">Add flog to criu</a></td>
 				<td>Merged</td>
 			</tr>
 
 			<tr align="center">
-				<td>Commit 2/8</td>
-				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/95c1a0316277181902d37c28cf48fbc5dc5c49a2">Move files from criu/flog to criu/criu</a></td>
+				<td>Commit 2/10</td>
+				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/8a995175ba1c60688119e56f709cbd48114e7034">flog: transfer files from separate subtree to criu/criu</a></td>
 				<td>Pushed</td>
 			</tr>
 
 			<tr align="center">
-				<td>Commit 3/8</td>
-				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/4aea88b549370826346ebc4deccb5b127aa07477">Add option for logging in binary</a></td>
+				<td>Commit 3/10</td>
+				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/ec7c98e952ce1d1dfd542425675fee24f4a3c827">Add option to convert logs to binary</a></td>
 				<td>Pushed</td>
 			</tr>
 
 			<tr align="center">
-				<td>Commit 4/8</td>
-				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/51b30ec107798d5c67267c2eb2d4416ee74c5b05">Make changes to flog</a></td>
+				<td>Commit 4/10</td>
+				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/8e2ea7b1438727b6e1b3c0d36e053c6b72d8bf25">flog: add option to fallback to default textual logging</a></td>
 				<td>Pushed</td>
 			</tr>
 
 			<tr align="center">
-				<td>Commit 5/8</td>
-				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/75c7e1af3cb831a5aa8c7e729ab6f1d79378a484">Wire flog into criu</a></td>
+				<td>Commit 5/10</td>
+				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/3794bd043e6080cd951778e18e89bcb7aefe2a34">flog: remove commented code and unused function headers</a></td>
 				<td>Pushed</td>
 			</tr>
 
 			<tr align="center">
-				<td>Commit 6/8</td>
-				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/2e58c0f40942587a38471e33bb39badc50ec81a0">Add decoder to crit</a></td>
+				<td>Commit 6/10</td>
+				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/b6cb1d5185ff718912be33415295bcf9b49b19f2">flog: bypass incompatible architectures</a></td>
 				<td>Pushed</td>
 			</tr>
 
 			<tr align="center">
-				<td>Commit 7/8</td>
-				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/0753301037098bb868b80a210a87c5c236d5baf8">Use decoder in zdtm.py</a></td>
+				<td>Commit 7/10</td>
+				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/58df18f6e799489255e783645dc493705a596935">Implement flog in criu</a></td>
 				<td>Pushed</td>
 			</tr>
 			<tr align="center">
-				<td>Commit 8/8</td>
-				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/b3a64e4c72969d8cfb62e4b6df73ec759ca39f48">Document the usage of binary logger</a></td>
+				<td>Commit 8/10</td>
+				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/f5cf5effe704318bff81377fb412d7d4b8424363">Add decoding facility to crit</a></td>
+				<td>Pushed</td>
+			</tr>
+			<tr align="center">
+				<td>Commit 9/10</td>
+				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/7bb55de2bb51d4e97b4fcbada6c0e4487cb7544d">zdtm.py: use flog printer to log</a></td>
+				<td>Pushed</td>
+			</tr>
+			<tr align="center">
+				<td>Commit 10/10</td>
+				<td><a href="https://github.com/checkpoint-restore/criu/pull/1192/commits/e26082e5ff1340a018693aaa344230d7059e71cc">Document the usage of binary logger</a></td>
 				<td>Pushed</td>
 			</tr>
 		</table>
@@ -195,7 +207,7 @@
 
 		<h2>Pending Work and Improvments</h2>
 		<p>
-			-	&emsp;Fix: _Generic macro usage so it is compatible with centos architecture.<br>
+			-	&emsp;Fix: _Generic function usage so it is compatible with all versions of GCC.<br>
 			-	&emsp;Fix: The decoder to be compatible with amd architectures.<br>
 			-	&emsp;Add time stamp and PID to logs.<br>
 		</p>
